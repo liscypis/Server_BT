@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="Server_BT:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/Server_BT_jar</output-path>
+    <root id="archive" name="Server_BT.jar">
+      <element id="module-output" name="Server_BT" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/io/ultreia/bluecove/2.1.1/bluecove-2.1.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/google/code/gson/gson/2.8.5/gson-2.8.5.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
