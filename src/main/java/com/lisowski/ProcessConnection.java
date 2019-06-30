@@ -5,9 +5,11 @@ import com.google.gson.Gson;
 
 import java.awt.*;
 import java.awt.event.InputEvent;
+import java.io.BufferedInputStream;
 import java.io.EOFException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
+import java.util.Arrays;
 
 import javax.microedition.io.StreamConnection;
 
@@ -18,7 +20,6 @@ import static java.awt.event.KeyEvent.*;
 public class ProcessConnection extends Thread {
     private StreamConnection mConnection;
     private Robot robot;
-    private int x, y;
 
     public ProcessConnection(StreamConnection connection) {
         try {
@@ -34,15 +35,31 @@ public class ProcessConnection extends Thread {
         try {
             InputStream inputStream = mConnection.openInputStream();
             System.out.println("Czekam na dane");
-            Message message = null;
-            ObjectInputStream in = new ObjectInputStream(inputStream);
-            Gson gson = new Gson();
+//            BufferedInputStream buf = new BufferedInputStream(inputStream);
+//            Message message = null;
+//            ObjectInputStream in = new ObjectInputStream(inputStream);
+//            Gson gson = new Gson();
+            byte[] array = new byte[6];
+            int numBytes = 0;
             while (true) {
                 try {
-                    String json = (String) in.readObject();
+//                    String json = (String) in.readObject();
 //                    System.out.println(json);
-                    message = gson.fromJson(json, Message.class);
-                    checkMessage(message);
+//                    message = gson.fromJson(json, Message.class);
+//                    checkMessage(message);
+                    numBytes = inputStream.read(array);
+
+                    if(numBytes >0){
+                        System.out.println(array[0]+ " " + array[1] + " " + array[2] + " " + array[3] + " " + array[4] + " " + array[5]);
+                        System.out.println(numBytes);
+                        checkMessage(array);
+//                        Arrays.fill(array, (byte) 0);
+                        if(numBytes == 1){
+                            System.out.println("FINITO");
+                            break;
+                        }
+
+                    }
                 } catch (EOFException e) {
                     break;
                 }
@@ -52,43 +69,44 @@ public class ProcessConnection extends Thread {
         }
     }
 
-    private void checkMessage(Message message) {
-        if (message.getmKey() != 0)
-            processKeyboardData(message.getmKey());
-        if (message.getmX() != 0 || message.getmY() != 0) {
+    private void checkMessage(byte[] message) {
+        if (message[0] != 0 || message[1] != 0)
             processMouseData(message);
-        }
-        if (message.getmButton() != 0 ) {
+
+        if (message[2] != 0 )
             processPressMouse(message);
-        }
+
+        if (message[5] != 0)
+            processKeyboardData(message[5]);
     }
 
-    private void processPressMouse(Message message) {
-        if(message.ismPress() && message.ismRelease()){ //  jedno klikniecie
-            if(message.getmButton() == 1){
+    private void processPressMouse(byte[] message) {
+        if(message[3] == 1 && message[4] == 1){ //  jedno klikniecie
+            if(message[2] == 1){
                 robot.mousePress(InputEvent.BUTTON1_MASK);
                 robot.mouseRelease(InputEvent.BUTTON1_MASK);
             }
-            if(message.getmButton() == 3){
+            if(message[2] == 3){
                 robot.mousePress(InputEvent.BUTTON3_MASK);
                 robot.mouseRelease(InputEvent.BUTTON3_MASK);
             }
         }
-        if(message.ismPress() && !message.ismRelease()){ // trzymamy LPM
+        if(message[3] == 1 && message[4] == 0){ // trzymamy LPM
             robot.mousePress(InputEvent.BUTTON1_MASK);
         }
-        if(!message.ismPress() && message.ismRelease()){ // puszczamy lpm
+        if(message[3] == 0 && message[4] == 1){ // puszczamy lpm
             robot.mouseRelease(InputEvent.BUTTON1_MASK);
         }
     }
 
-    private void processMouseData(final Message message) {
+    private void processMouseData(byte[] array) {
         PointerInfo pi = MouseInfo.getPointerInfo();
         Point p = pi.getLocation();
-        x = p.x;
-        y = p.y;
-        x += message.getmX();
-        y += message.getmY();
+        int x = p.x;
+        int y = p.y;
+        x += array[0];
+        y += array[1];
+//        robot.delay(5);
         robot.mouseMove(x,y);
 
 //        System.out.println(x + " " + y);
