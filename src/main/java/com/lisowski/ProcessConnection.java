@@ -39,7 +39,7 @@ public class ProcessConnection extends Thread {
 //            Message message = null;
 //            ObjectInputStream in = new ObjectInputStream(inputStream);
 //            Gson gson = new Gson();
-            byte[] array = new byte[6];
+            byte[] array = new byte[7];
             int numBytes = 0;
             while (true) {
                 try {
@@ -50,7 +50,7 @@ public class ProcessConnection extends Thread {
                     numBytes = inputStream.read(array);
 
                     if(numBytes >0){
-                        System.out.println(array[0]+ " " + array[1] + " " + array[2] + " " + array[3] + " " + array[4] + " " + array[5]);
+                        System.out.println(array[0]+ " " + array[1] + " " + array[2] + " " + array[3] + " " + array[4] + " " + array[5] + " " + array[6]);
                         System.out.println(numBytes);
                         checkMessage(array);
 //                        Arrays.fill(array, (byte) 0);
@@ -78,6 +78,14 @@ public class ProcessConnection extends Thread {
 
         if (message[5] != 0)
             processKeyboardData(message[5]);
+
+        if (message[6] != 0)
+            processWheel(message[6]);
+    }
+
+    private void processWheel(byte b) {
+        robot.delay(30);
+        robot.mouseWheel(b);
     }
 
     private void processPressMouse(byte[] message) {
@@ -108,7 +116,6 @@ public class ProcessConnection extends Thread {
         y += array[1];
 //        robot.delay(5);
         robot.mouseMove(x,y);
-
 //        System.out.println(x + " " + y);
     }
 
