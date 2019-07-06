@@ -13,14 +13,11 @@ public class Main extends  Thread {
         public void run() {
             waitForConnection();
         }
-        // Waiting for connection from devices
         private void waitForConnection() {
-            // retrieve the local Bluetooth device object
             LocalDevice local = null;
             StreamConnectionNotifier streamConnectionNotifier;
             StreamConnection streamConnection = null;
 
-            // setup the server to listen for connection
             try {
                 local = LocalDevice.getLocalDevice();
                 local.setDiscoverable(DiscoveryAgent.GIAC);
@@ -31,7 +28,7 @@ public class Main extends  Thread {
                 e.printStackTrace();
                 return;
             }
-            // waiting for connection
+
             while(true) {
                 try {
                     System.out.println("czekam na poczaczenie");

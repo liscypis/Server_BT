@@ -1,20 +1,12 @@
 package com.lisowski;
 
-
-import com.google.gson.Gson;
-
 import java.awt.*;
 import java.awt.event.InputEvent;
-import java.io.BufferedInputStream;
-import java.io.EOFException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.util.Arrays;
+import java.io.*;
 
 import javax.microedition.io.StreamConnection;
 
 import static java.awt.event.KeyEvent.*;
-
 
 
 public class ProcessConnection extends Thread {
@@ -35,30 +27,21 @@ public class ProcessConnection extends Thread {
         try {
             InputStream inputStream = mConnection.openInputStream();
             System.out.println("Czekam na dane");
-//            BufferedInputStream buf = new BufferedInputStream(inputStream);
-//            Message message = null;
-//            ObjectInputStream in = new ObjectInputStream(inputStream);
-//            Gson gson = new Gson();
             byte[] array = new byte[7];
             int numBytes = 0;
             while (true) {
                 try {
-//                    String json = (String) in.readObject();
-//                    System.out.println(json);
-//                    message = gson.fromJson(json, Message.class);
-//                    checkMessage(message);
                     numBytes = inputStream.read(array);
 
-                    if(numBytes >0){
-                        System.out.println(array[0]+ " " + array[1] + " " + array[2] + " " + array[3] + " " + array[4] + " " + array[5] + " " + array[6]);
-                        System.out.println(numBytes);
+                    if (numBytes > 0) {
+//                        System.out.println(array[0]+ " " + array[1] + " " + array[2] + " " + array[3] + " " + array[4] + " " + array[5] + " " + array[6]);
+//                        System.out.println(numBytes);
+
                         checkMessage(array);
-//                        Arrays.fill(array, (byte) 0);
-                        if(numBytes == 1){
+                        if (numBytes == 1) {
                             System.out.println("FINITO");
                             break;
                         }
-
                     }
                 } catch (EOFException e) {
                     break;
@@ -73,7 +56,7 @@ public class ProcessConnection extends Thread {
         if (message[0] != 0 || message[1] != 0)
             processMouseData(message);
 
-        if (message[2] != 0 )
+        if (message[2] != 0)
             processPressMouse(message);
 
         if (message[5] != 0)
@@ -89,20 +72,20 @@ public class ProcessConnection extends Thread {
     }
 
     private void processPressMouse(byte[] message) {
-        if(message[3] == 1 && message[4] == 1){ //  jedno klikniecie
-            if(message[2] == 1){
+        if (message[3] == 1 && message[4] == 1) { //  jedno klikniecie
+            if (message[2] == 1) {
                 robot.mousePress(InputEvent.BUTTON1_MASK);
                 robot.mouseRelease(InputEvent.BUTTON1_MASK);
             }
-            if(message[2] == 3){
+            if (message[2] == 3) {
                 robot.mousePress(InputEvent.BUTTON3_MASK);
                 robot.mouseRelease(InputEvent.BUTTON3_MASK);
             }
         }
-        if(message[3] == 1 && message[4] == 0){ // trzymamy LPM
+        if (message[3] == 1 && message[4] == 0) { // trzymamy LPM
             robot.mousePress(InputEvent.BUTTON1_MASK);
         }
-        if(message[3] == 0 && message[4] == 1){ // puszczamy lpm
+        if (message[3] == 0 && message[4] == 1) { // puszczamy lpm
             robot.mouseRelease(InputEvent.BUTTON1_MASK);
         }
     }
@@ -115,7 +98,7 @@ public class ProcessConnection extends Thread {
         x += array[0];
         y += array[1];
 //        robot.delay(5);
-        robot.mouseMove(x,y);
+        robot.mouseMove(x, y);
 //        System.out.println(x + " " + y);
     }
 
